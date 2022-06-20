@@ -10,6 +10,8 @@ import SnapKit
 
 class TodayViewController: UIViewController {
     
+    private var todayList: [Today] = []
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -31,6 +33,8 @@ class TodayViewController: UIViewController {
         collectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+        
+        fetchData()
     }
 }
 
@@ -55,7 +59,7 @@ extension TodayViewController: UICollectionViewDelegateFlowLayout {
 
 extension TodayViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        5
+        todayList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -71,12 +75,35 @@ extension TodayViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TodayCollectionViewCell", for: indexPath) as? TodayCollectionViewCell else { return UICollectionViewCell() }
         
-        cell.setup()
+        let today = todayList[indexPath.item]
+        
+        cell.setup(today: today)
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let today = todayList[indexPath.item]
+        self.present(AppDetailViewController(today: today), animated: true)
     }
 }
 
 extension TodayViewController: UICollectionViewDelegate {
     
+}
+
+private extension TodayViewController {
+    func fetchData(){
+        guard let url = Bundle.main.url(forResource: "Today", withExtension: "plist") else { return }
+                
+        do {
+            let data = try Data(contentsOf: url)
+            let result = try PropertyListDecoder().decode([Today].self, from: data)
+            
+            todayList = result
+        }
+        catch{
+            
+        }
+    }
 }

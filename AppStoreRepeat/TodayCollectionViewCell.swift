@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class TodayCollectionViewCell: UICollectionViewCell {
     
@@ -48,12 +49,16 @@ class TodayCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    func setup(){
+    func setup(today: Today){
         setLayout()
         
-        titleLabel.text = "제목"
-        subtitleLabel.text = "부제목"
-        descriptionLabel.text = "설명을 해야한다."
+        titleLabel.text = today.title
+        subtitleLabel.text = today.description
+        descriptionLabel.text = today.description
+        
+        if let imageURL = URL(string: today.imageURL){
+            imageView.kf.setImage(with: imageURL)
+        }
     }
 }
 
